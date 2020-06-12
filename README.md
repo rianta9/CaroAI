@@ -7,6 +7,6 @@
 <br>  Hoàng Quốc Khánh
 <br>  Hồ Xuân Lâm
 <br>  Đoàn Phú Thuận
-<br>  Nguyễn Minh Hiếu
+<br>  Nguyễn Khắc Minh Hiếu
 <br> Nội dung:
 <br>  Game cờ caro sử dụng thuật toán cắt tỉa alpha beta, bài tập nhóm môn nhập môn trí tuệ nhân tạo!
