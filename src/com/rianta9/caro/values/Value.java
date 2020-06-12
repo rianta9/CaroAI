@@ -14,14 +14,15 @@ public class Value {
 	public static final String INFO_MESSAGE = 
 		  "Trường: Đại Học Khoa Học Huế\n"
 		+ "Môn: Nhập Môn Trí Tuệ Nhân Tạo\n"
-		+ "Đề tài: Game cờ caro sử dụng thuật toán Minimax\n"
+		+ "Giảng viên: Đoàn Thị Hồng Phước\n"
+		+ "Đề tài: Game cờ caro sử dụng thuật toán cắt tỉa alpha beta\n"
 		+ "Thành viên thực hiện:\n"
+		+ " Đoàn Phú Thuận\n"
 		+ " Hồ Xuân Lâm\n"
 		+ " Nguyễn Minh Hiếu\n"
-		+ " Đoàn Phú Thuận\n"
 		+ " Hoàng Quốc Khánh\n"
 		+ "Nội dung:\n"
-		+ " Game cờ caro sử dụng thuật toán Minimax, bài tập nhóm môn nhập môn trí tuệ nhân tạo!";
+		+ " Game cờ caro sử dụng thuật toán cắt tỉa alpha beta, bài tập nhóm môn nhập môn trí tuệ nhân tạo!";
 	public static final String INTRODUCE_MESSAGE = 
 		  "Nguồn Gốc và Luật Chơi Cờ Caro"
 		+ "\r\n"
@@ -110,14 +111,61 @@ public class Value {
 		+ "\r\n"
 		+ "Nguồn bài viết: cothu.vn";
 	
-	public static final int TABLE_SIZE = 19; // số hàng/số cột mặc định
-	public static final int DEFAULT_MODE = 0; // chế độ chơi mặc định
-	public static final int SIZE = Value.TABLE_SIZE; // số hàng/cột của tablecells
-	public static final int CELL_WIDTH = 30; // độ rộng của mỗi cell
-	public static final int MARGIN = 10; // khoảng cách giữa các panel
-	public static final int TEXT_CELL_SIZE = 20; // cỡ chữ trong mỗi cell
-	public static final Color USER_TEXT_COLOR = Color.magenta; // màu chữ X
-	public static final Color AI_TEXT_COLOR = Color.GREEN; // màu chữ 0
-	public static final Color CELL_BACKGROUND_COLOR = Color.white; // màu cell
-	public static final Color BACKGROUND_COLOR = new Color(31, 31, 51); // màu cell
+	/**
+	 *  số hàng/số cột mặc định
+	 */
+	public static final int SIZE = 19;
+	/**
+	 *  chế độ chơi mặc định: User đi trước
+	 */
+	public static final int DEFAULT_MODE = 0; 
+	/**
+	 *  độ rộng của mỗi cell
+	 */
+	public static final int CELL_WIDTH = 30; 
+	/**
+	 *  khoảng cách giữa các panel
+	 */
+	public static final int MARGIN = 10; 
+	/**
+	 *  cỡ chữ trong mỗi cell
+	 */
+	public static final int TEXT_CELL_SIZE = 20; 
+	/**
+	 *  màu chữ mặc định của X
+	 */
+	public static final Color USER_TEXT_COLOR = Color.magenta; 
+	/**
+	 *  màu chữ mặc định của O
+	 */
+	public static final Color AI_TEXT_COLOR = Color.GREEN; 
+	/**
+	 *  màu mặc định của mỗi ô vuông
+	 */
+	public static final Color CELL_COLOR = Color.white; 
+	
+	/**
+	 * màu mặc định khi user click vào một ô trong bàn cờ
+	 */
+	public static final Color CLICK_CELL_COLOR = new Color(0, 139, 139);
+	/**
+	 * màu nền mặc định
+	 */
+	public static final Color BACKGROUND_COLOR = new Color(31, 31, 51); 
+	/**
+	 * Giá trị mặc định của user
+	 */
+	public static final int USER_VALUE = 1;
+	/**
+	 * Giá trị mặc định của AI
+	 */
+	public static final int AI_VALUE = 2;
+	/**
+	 * Độ sâu tìm kiếm tối đa
+	 */
+	public static final int MAX_DEPTH = 3;
+	/**
+	 * số lượng lấy ra tối đa của danh sách các ô được lượng giá cao nhất
+	 */
+	public static final int MAX_NUM_OF_HIGHEST_CELL_LIST = 8;
 }

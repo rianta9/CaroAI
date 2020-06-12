@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.rianta9.caro.view;
 
 import java.awt.EventQueue;
@@ -13,8 +10,10 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import com.rianta9.caro.bean.CaroAI;
 import com.rianta9.caro.bean.RoundedBorder;
+import com.rianta9.caro.bean.Setting;
+import com.rianta9.caro.bo.CaroAI;
+import com.rianta9.caro.dao.SettingDao;
 import com.rianta9.caro.values.Value;
 
 import java.awt.Color;
@@ -50,19 +49,12 @@ public class App extends JFrame implements MouseListener{
 	private JLabel lblAIScore; // điểm của AI
 	
 	private CaroAI caro;
+	private Setting setting;
 	private Notification notification;
 	
-	public static final int SIZE = Value.TABLE_SIZE; // số hàng/cột của tablecells
-	public static final int CELL_WIDTH = Value.CELL_WIDTH; // độ rộng của mỗi cell
-	public static final int MARGIN = Value.MARGIN; // khoảng cách giữa các panel
 	public static final int TEXT_CELL_SIZE = Value.TEXT_CELL_SIZE; // cỡ chữ trong mỗi cell
 	
 	private String currentPath; // đường dẫn hiện tại của project
-	public Color userTextColor; // màu chữ X
-	public Color aiTextColor; // màu chữ 0
-	public Color cellBackgroundColor; // màu cell
-	public Color backgroundColor; // màu nền
-	private int mode; // chế độ chơi
 	
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	
@@ -87,27 +79,40 @@ public class App extends JFrame implements MouseListener{
 	 * Tạo game mới, clear màn chơi cũ
 	 */
 	public void newGame() {
-		caro = new CaroAI(SIZE, mode);
+		setting = SettingDao.LoadSettingInfo();
+		caro = new CaroAI(setting.getMode());
 		userClickedCell = null;
 		aiClickedCell = null;
-		for (int i = 0; i < SIZE; i++) {
-			for (int j = 0; j < SIZE; j++) {
-				cell[i][j].setBackground(cellBackgroundColor);
-				cell[i][j].setForeground(userTextColor);
+		for (int i = 0; i < Value.SIZE; i++) {
+			for (int j = 0; j < Value.SIZE; j++) {
+				cell[i][j].setBackground(setting.getCellColor());
+				cell[i][j].setForeground(setting.getxColor());
 				cell[i][j].setText("");
 			}
 		}
-		if(mode == 1) {
+		if(setting.getMode() == 1) {
 			// cập nhật nước đi của AI
 			int x = caro.getNextX();
 			int y = caro.getNextY();
-			aiClickedCell = cell[x][y];
-			aiClickedCell.setForeground(aiTextColor);
-			aiClickedCell.setText("O");
-			aiClickedCell.setBackground(new Color(0, 139, 139)); // làm nổi bật cell được AI chọn
+			updateTableCells(x, y, Value.AI_VALUE);
 		}
 	}
 	
+	public void updateTableCells(int x, int y, int player) {
+		if(player == Value.AI_VALUE) {
+			if(aiClickedCell != null) {
+				aiClickedCell.setBackground(setting.getCellColor()); // đặt lại màu clickedCell cũ
+			}
+			aiClickedCell = cell[x][y];
+			aiClickedCell.setForeground(setting.getoColor());
+			aiClickedCell.setText("O");
+			aiClickedCell.setBackground(Value.CLICK_CELL_COLOR); // làm nổi bật cell được AI chọn
+		}
+		else {
+			cell[x][y].setBackground(setting.getCellColor()); // đặt lại màu clickedCell cũ
+			cell[x][y].setText("X");
+		}
+	}
 	
 	public Notification getNotificationInstance() {
 		if(notification == null) notification = new Notification();
@@ -124,52 +129,51 @@ public class App extends JFrame implements MouseListener{
 		setIconImage(Toolkit.getDefaultToolkit().getImage(currentPath+"\\file\\img\\icon.png"));
 		setTitle("Cờ Caro");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(SIZE*CELL_WIDTH+3*MARGIN+280, SIZE*CELL_WIDTH+50);//kích thước của mỗi phần thay đổi tự động khi thay đổi SIZE(số hàng/số cột)
+		setSize(Value.SIZE*Value.CELL_WIDTH+3*Value.MARGIN+280, Value.SIZE*Value.CELL_WIDTH+50);//kích thước của mỗi phần thay đổi tự động khi thay đổi SIZE(số hàng/số cột)
 		setLocationRelativeTo(null);
 		
-		mode = Value.DEFAULT_MODE; // User chơi trước
-		userTextColor = Value.USER_TEXT_COLOR; // màu magenta
-		aiTextColor = Value.AI_TEXT_COLOR; // màu GREEN
-		cellBackgroundColor = Value.CELL_BACKGROUND_COLOR; // màu trắng
+
+		setting = SettingDao.LoadSettingInfo();
+		caro = new CaroAI(setting.getMode()); // khởi tạo CaroAI
 		cellBorder = new LineBorder(Color.black, 1); // tạo border cho mỗi cell trong ma trận
-		backgroundColor = Value.BACKGROUND_COLOR; // rbg(31, 31, 51)
-		caro = new CaroAI(SIZE, mode); // khởi tạo CaroAI
 		
 		/*------------------Tạo các đối tượng------------------*/
 		contentPane = new JPanel();
-		contentPane.setBackground(backgroundColor);
+		contentPane.setBackground(setting.getBackgroundColor());
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		TableCells = new JPanel();
 		TableCells.setBackground(new Color(255, 255, 255));
-		TableCells.setLayout(new GridLayout(SIZE, SIZE, 0, 0));
+		TableCells.setLayout(new GridLayout(Value.SIZE, Value.SIZE, 0, 0));
 		TableCells.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		TableCells.setBounds(MARGIN, MARGIN, SIZE*CELL_WIDTH, SIZE*CELL_WIDTH);
+		TableCells.setBounds(Value.MARGIN, Value.MARGIN, Value.SIZE*Value.CELL_WIDTH, Value.SIZE*Value.CELL_WIDTH);
 		contentPane.add(TableCells);
 		
 		// Tạo ma trận và add vào TableCells
-		cell = new JLabel[SIZE][SIZE];
-		for (int i = 0; i < SIZE; i++) {
-			for (int j = 0; j < SIZE; j++) {
+		cell = new JLabel[Value.SIZE][Value.SIZE];
+		for (int i = 0; i < Value.SIZE; i++) {
+			for (int j = 0; j < Value.SIZE; j++) {
 				cell[i][j] = new JLabel();
-				cell[i][j].setSize(CELL_WIDTH, CELL_WIDTH); // kích cỡ mỗi cell
+				cell[i][j].setSize(Value.CELL_WIDTH, Value.CELL_WIDTH); // kích cỡ mỗi cell
 				cell[i][j].setOpaque(true);
 				cell[i][j].setBorder(cellBorder);
 				cell[i][j].setFont(new Font("Comic Sans MS", Font.BOLD, TEXT_CELL_SIZE));
-				cell[i][j].setBackground(cellBackgroundColor);
-				cell[i][j].setForeground(userTextColor);
+				cell[i][j].setBackground(setting.getCellColor());
+				cell[i][j].setForeground(setting.getxColor());
 				cell[i][j].setHorizontalAlignment(SwingConstants.CENTER); // căn giữa chữ
 				cell[i][j].addMouseListener(this); // add hàm bắt sự kiện click chuột
 				TableCells.add(cell[i][j]); // add cell vào TableCells
 			}
 		}
+		// Nếu chế độ AI đánh trước => cập nhật lượt đầu của AI
+		if(setting.getMode() == 1) updateTableCells(caro.getNextX(), caro.getNextX(), Value.AI_VALUE);
 		
 		JPanel view = new JPanel();
 		view.setBackground(new Color(250, 235, 215));
 		view.setForeground(Color.BLACK);
-		view.setBounds(SIZE*CELL_WIDTH+2*MARGIN, MARGIN, 274, SIZE*CELL_WIDTH);
+		view.setBounds(Value.SIZE*Value.CELL_WIDTH+2*Value.MARGIN, Value.MARGIN, 274, Value.SIZE*Value.CELL_WIDTH);
 		contentPane.add(view);
 		view.setLayout(null);
 		
@@ -217,28 +221,46 @@ public class App extends JFrame implements MouseListener{
 		view.add(btnExitGame);
 		
 		JRadioButton rdbtnUserPlaysFirst = new JRadioButton("User plays first");
+		JRadioButton rdbtnAiPlaysFirst = new JRadioButton("AI plays first");
+		if(setting.getMode() == 0) rdbtnUserPlaysFirst.setSelected(true);
+		else rdbtnAiPlaysFirst.setSelected(true);
+		
 		rdbtnUserPlaysFirst.setForeground(new Color(107, 142, 35));
 		rdbtnUserPlaysFirst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mode = 0; // cập nhật mode
-				int result = JOptionPane.showConfirmDialog(null, "Xác nhận đổi chế độ chơi?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-				if(result == JOptionPane.YES_OPTION) newGame(); // clear màn chơi cũ
+				if(setting.getMode() == 1) {
+					int result = JOptionPane.showConfirmDialog(null, "Xác nhận đổi chế độ chơi?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+					if(result == JOptionPane.YES_OPTION) {
+						setting.setMode(0); // cập nhật mode
+						newGame(); // clear màn chơi cũ
+					}
+					else {
+						rdbtnUserPlaysFirst.setSelected(false);
+						rdbtnAiPlaysFirst.setSelected(true);
+					}
+				}
 			}
 		});
 		rdbtnUserPlaysFirst.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-		rdbtnUserPlaysFirst.setSelected(true);
 		buttonGroup.add(rdbtnUserPlaysFirst);
 		rdbtnUserPlaysFirst.setOpaque(false);
 		rdbtnUserPlaysFirst.setBounds(26, 192, 232, 23);
 		view.add(rdbtnUserPlaysFirst);
 		
-		JRadioButton rdbtnAiPlaysFirst = new JRadioButton("AI plays first");
 		rdbtnAiPlaysFirst.setForeground(new Color(107, 142, 35));
 		rdbtnAiPlaysFirst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mode = 1; // cập nhật mode
-				int result = JOptionPane.showConfirmDialog(null, "Xác nhận đổi chế độ chơi?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-				if(result == JOptionPane.YES_OPTION) newGame(); // clear màn chơi cũ
+				if(setting.getMode() == 0) {
+					int result = JOptionPane.showConfirmDialog(null, "Xác nhận đổi chế độ chơi?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+					if(result == JOptionPane.YES_OPTION) {
+						setting.setMode(1); // cập nhật mode
+						newGame(); // clear màn chơi cũ
+					}
+					else {
+						rdbtnUserPlaysFirst.setSelected(true);
+						rdbtnAiPlaysFirst.setSelected(false);
+					}
+				}
 			}
 		});
 		rdbtnAiPlaysFirst.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
@@ -327,10 +349,10 @@ public class App extends JFrame implements MouseListener{
 		JButton btnXColor = new JButton("Màu X");
 		btnXColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Color color = JColorChooser.showDialog(null, 
-	                    "Chọn màu chữ", userTextColor); 
+				Color color = JColorChooser.showDialog(App.this, 
+	                    "Chọn màu chữ của User", setting.getxColor()); 
 				if(color != null) {
-					userTextColor = color;
+					setting.setxColor(color);
 					newGame();
 				}
 			}
@@ -346,11 +368,11 @@ public class App extends JFrame implements MouseListener{
 		JButton btnBackgroundColor = new JButton("Màu Nền");
 		btnBackgroundColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Color color = JColorChooser.showDialog(null, 
-	                    "Chọn màu nền", backgroundColor); 
+				Color color = JColorChooser.showDialog(App.this, 
+	                    "Chọn màu nền", setting.getBackgroundColor()); 
 				if(color != null) {
-					backgroundColor = color;
-					contentPane.setBackground(backgroundColor);
+					setting.setBackgroundColor(color);
+					contentPane.setBackground(color);
 				}
 			}
 		});
@@ -365,10 +387,10 @@ public class App extends JFrame implements MouseListener{
 		JButton btnOColor = new JButton("Màu O");
 		btnOColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Color color = JColorChooser.showDialog(null, 
-	                    "Chọn màu chữ", aiTextColor); 
+				Color color = JColorChooser.showDialog(App.this, 
+	                    "Chọn màu chữ của AI", setting.getoColor()); 
 				if(color != null) {
-					aiTextColor = color;
+					setting.setoColor(color);
 					newGame();
 				}
 			}
@@ -384,10 +406,10 @@ public class App extends JFrame implements MouseListener{
 		JButton btnCellColor = new JButton("Màu Ô");
 		btnCellColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Color color = JColorChooser.showDialog(null, 
-	                    "Chọn màu của mỗi cell", cellBackgroundColor); 
+				Color color = JColorChooser.showDialog(App.this, 
+	                    "Chọn màu của mỗi ô vuông", setting.getCellColor()); 
 				if(color != null) {
-					cellBackgroundColor = color;
+					setting.setCellColor(color);
 					newGame();
 				}
 			}
@@ -412,14 +434,10 @@ public class App extends JFrame implements MouseListener{
 	public void mouseClicked(MouseEvent element) {
 		int x = -1, y = -1; // lưu tọa độ
 		// lấy tọa độ user click
-		for (int i = 0; i < SIZE; i++) {
+		for (int i = 0; i < Value.SIZE; i++) {
 			boolean fl = false;
-			for (int j = 0; j < SIZE; j++) {
-				if(cell[i][j] == element.getSource()) {
-					if(userClickedCell != null) {
-						userClickedCell.setBackground(cellBackgroundColor); // đặt lại màu clickedCell cũ
-					}
-					userClickedCell = cell[i][j]; // cập nhật clickedCell
+			for (int j = 0; j < Value.SIZE; j++) {
+				if(cell[i][j] == element.getSource()) { // nếu người dùng click vào ô này
 					x = i;
 					y = j;
 					fl = true;
@@ -429,55 +447,72 @@ public class App extends JFrame implements MouseListener{
 			if(fl) break; // dừng kiểm tra
 		}
 		
-		/*kiểm tra số lần click của user*/
-		
+		/*kiểm tra số lần click của user*/	
 		if(element.getClickCount() == 1) { // người dùng click dạo(click 1 lần)
-			userClickedCell.setBackground(new Color(0, 139, 139)); // làm nổi bật ô được click
+			if(userClickedCell != null && userClickedCell != aiClickedCell) {
+				userClickedCell.setBackground(setting.getCellColor()); // đặt lại màu clickedCell cũ
+			}
+			userClickedCell = cell[x][y]; // cập nhật clickedCell
+			userClickedCell.setBackground(Value.CLICK_CELL_COLOR); // làm nổi bật ô được click
 		}
 		
 		else if(element.getClickCount() == 2) { // người dùng chọn đánh ô này
-			userClickedCell.setBackground(cellBackgroundColor); // đặt lại màu clickedCell cũ
-			if(caro.clickable(x, y)) {//nếu ô này chưa được đánh
-				caro.update(x, y, CaroAI.USER_VALUE); // update matrix
+			if(caro.isClickable(x, y)) {//nếu ô này chưa được đánh
+				caro.update(x, y, Value.USER_VALUE); // update matrix
+		        System.out.println("\n----------------------------------------------------------------------");
+				System.out.println("Nước đi của User:" + x + " " + y);
 				
 				// Cập nhật bước đi của User
-				userClickedCell.setText("X"); // đánh dấu đã đánh
-				//System.out.println("x:" + x + " y:" + y + " double clicked!\n");
-				
-				// Kiểm tra sau khi đánh người dùng có thắng không
-				int checkWinnerResult = caro.checkWinner();
-				if(checkWinnerResult == CaroAI.USER_VALUE) {
-					JOptionPane.showMessageDialog(null, "Bạn đã thắng!");
-					int currentPoint = Integer.valueOf(lblUserScore.getText())+1;
-					lblUserScore.setText(String.valueOf(currentPoint));
-					newGame();
-					return;
-				}
-				
-				// Nếu không thì đến lượt AI đánh
+				updateTableCells(x, y, Value.USER_VALUE);				
+				// Kiểm tra trạng thái của bàn cờ sau khi User đánh
+				if(checkResult(Value.USER_VALUE)) return;				
+				// Nếu user không thắng và bàn cờ chưa full thì đến lượt AI đánh
 				caro.nextStep();
 				
 				// Cập nhật bước đi của AI
 				x = caro.getNextX();
 				y = caro.getNextY();
-				if(aiClickedCell != null) {
-					aiClickedCell.setBackground(cellBackgroundColor); // đặt lại màu clickedCell cũ
-				}
-				aiClickedCell = cell[x][y];
-				aiClickedCell.setForeground(aiTextColor);
-				aiClickedCell.setText("O");
-				aiClickedCell.setBackground(new Color(0, 139, 139)); // làm nổi bật cell được AI chọn
+				updateTableCells(x, y, Value.AI_VALUE);
 				
-				// Kiểm tra sau khi đánh AI có thắng không
-				checkWinnerResult = caro.checkWinner();
-				if(checkWinnerResult == CaroAI.AI_VALUE) {
-					JOptionPane.showMessageDialog(null, "AI đã thắng!");
-					int currentPoint = Integer.valueOf(lblAIScore.getText())+1;
-					lblAIScore.setText(String.valueOf(currentPoint));
-					newGame();
-				}
+				// Kiểm tra trạng thái của bàn cờ sau khi AI đánh
+				if(checkResult(Value.AI_VALUE)) return;
 			}
 		}
+	}
+
+	/**
+	 * 
+	 */
+	private boolean checkResult(int player) {
+		if(player == Value.USER_VALUE) {
+			boolean result = caro.checkWinner(Value.USER_VALUE);
+			if(result == true) {
+				System.out.println("User thắng!");
+				JOptionPane.showMessageDialog(null, "Bạn đã thắng!");
+				int currentPoint = Integer.valueOf(lblUserScore.getText())+1;
+				lblUserScore.setText(String.valueOf(currentPoint));
+				newGame();
+				return true; // kết thúc màn chơi
+			}
+		}
+		else {
+			boolean result = caro.checkWinner(Value.AI_VALUE);
+			if(result == true) {
+				System.out.println("AI thắng!");
+				JOptionPane.showMessageDialog(null, "AI đã thắng!");
+				int currentPoint = Integer.valueOf(lblAIScore.getText())+1;
+				lblAIScore.setText(String.valueOf(currentPoint));
+				newGame();
+				return true;
+			}
+		}
+		if(caro.isOver()) {
+			System.out.println("Hòa!");
+			JOptionPane.showMessageDialog(null, "Hòa!");
+			newGame();
+			return true;
+		}
+		return false;
 	}
 
 	/* (non-Javadoc)
