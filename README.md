@@ -1,4 +1,6 @@
 # CaroAI_Java
+<h1>Game cờ caro sử dụng thuật toán cắt tỉa alpha beta, bài tập nhóm môn nhập môn trí tuệ nhân tạo!</h1>
+
 <br> Trường: Đại Học Khoa Học Huế
 <br> Môn: Nhập Môn Trí Tuệ Nhân Tạo
 <br> Giảng viên: Đoàn Thị Hồng Phước
@@ -8,5 +10,3 @@
 <br>  Hồ Xuân Lâm
 <br>  Đoàn Phú Thuận
 <br>  Nguyễn Khắc Minh Hiếu
-<br> Nội dung:
-<br>  <h1>Game cờ caro sử dụng thuật toán cắt tỉa alpha beta, bài tập nhóm môn nhập môn trí tuệ nhân tạo!</h1>
