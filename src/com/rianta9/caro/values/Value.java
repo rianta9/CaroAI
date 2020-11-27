@@ -17,10 +17,10 @@ public class Value {
 		+ "Giảng viên: Đoàn Thị Hồng Phước\n"
 		+ "Đề tài: Game cờ caro sử dụng thuật toán cắt tỉa alpha beta\n"
 		+ "Thành viên thực hiện:\n"
+		+ " Hoàng Quốc Khánh\n"
 		+ " Đoàn Phú Thuận\n"
 		+ " Hồ Xuân Lâm\n"
 		+ " Nguyễn Minh Hiếu\n"
-		+ " Hoàng Quốc Khánh\n"
 		+ "Nội dung:\n"
 		+ " Game cờ caro sử dụng thuật toán cắt tỉa alpha beta, bài tập nhóm môn nhập môn trí tuệ nhân tạo!";
 	public static final String INTRODUCE_MESSAGE = 
