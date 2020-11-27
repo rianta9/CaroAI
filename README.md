@@ -1,5 +1,6 @@
 # CaroAI_Java
-<h1>Game cờ caro sử dụng thuật toán cắt tỉa alpha beta, bài tập nhóm môn nhập môn trí tuệ nhân tạo!</h1>
+Game cờ caro sử dụng thuật toán cắt tỉa alpha beta, bài tập nhóm môn nhập môn trí tuệ nhân tạo!
+=======
 
 <br> Trường: Đại Học Khoa Học Huế
 <br> Môn: Nhập Môn Trí Tuệ Nhân Tạo
