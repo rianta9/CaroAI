@@ -1,4 +1,3 @@
-# CaroAI_Java
 # Game cờ caro sử dụng thuật toán cắt tỉa alpha beta, bài tập nhóm môn nhập môn trí tuệ nhân tạo!
 =======
 
@@ -12,4 +11,3 @@
 <br>  Đoàn Phú Thuận
 <br>  Nguyễn Khắc Minh Hiếu
 
-AUTHOR Hoàng Quốc Khánh
